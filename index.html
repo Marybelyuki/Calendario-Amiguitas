@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Páginas Libres 🦋</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Quicksand:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- Paleta de Colores "Jardín Secreto" --- */
+        :root {
+            --fondo-lavanda: #E6E6FA;
+            --texto-gris: #5D6975;
+            --menta-fresca: #B2DFDB;
+            --rosa-cuarzo: #FADADD;
+            --amarillo-disponible: #FFFACD;
+            --azul-cielo: #CFE2F3;
+            --sombra-suave: rgba(0, 0, 0, 0.1);
+            --fuente-titulos: 'Playfair Display', serif;
+            --fuente-cuerpo: 'Quicksand', sans-serif;
+        }
+
+        body {
+            font-family: var(--fuente-cuerpo);
+            background: linear-gradient(135deg, var(--fondo-lavanda), var(--azul-cielo));
+            color: var(--texto-gris);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px var(--sombra-suave);
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: var(--fuente-titulos);
+            color: var(--texto-gris);
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+
+        h1::after {
+            content: '🦋';
+            margin-left: 10px;
+            opacity: 0.8;
+        }
+        
+        p {
+            margin-bottom: 25px;
+            font-size: 1.1em;
+            opacity: 0.8;
+        }
+        
+        .seccion {
+            background-color: #fdfdff;
+            border: 1px dashed var(--fondo-lavanda);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            font-family: var(--fuente-titulos);
+            color: var(--texto-gris);
+            border-bottom: 2px solid var(--menta-fresca);
+            padding-bottom: 5px;
+            display: inline-block;
+            margin-top: 0;
+        }
+
+        /* --- Calendario --- */
+        #calendario {
+            display: grid;
+            grid-template-columns: 60px repeat(7, 1fr);
+            gap: 5px;
+            margin-top: 20px;
+        }
+        
+        .header-dia, .celda-hora, .celda-tiempo {
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 500;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header-dia {
+            background-color: var(--menta-fresca);
+            color: white;
+            font-weight: 700;
+        }
+        
+        .celda-hora {
+            background-color: var(--rosa-cuarzo);
+            font-size: 0.9em;
+            color: var(--texto-gris);
+        }
+
+        .celda-tiempo {
+            background-color: #f0f8ff;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            min-height: 40px;
+        }
+        
+        .celda-tiempo:hover {
+            transform: scale(1.05);
+            background-color: var(--rosa-cuarzo);
+        }
+
+        .ocupado-yo { background-color: var(--rosa-cuarzo) !important; }
+        .ocupado-amiga { background-color: var(--azul-cielo) !important; opacity: 0.7; }
+        .disponible-todas { background-color: var(--amarillo-disponible) !important; border: 2px solid #FFD700; }
+        
+        /* --- Sistema de Importar/Exportar --- */
+        textarea {
+            width: calc(100% - 20px);
+            min-height: 100px;
+            border: 2px solid var(--fondo-lavanda);
+            border-radius: 10px;
+            padding: 10px;
+            font-family: monospace;
+            margin-top: 10px;
+            resize: vertical;
+        }
+        
+        .boton {
+            background-color: var(--menta-fresca);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-family: var(--fuente-cuerpo);
+            font-weight: 700;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            box-shadow: 0 4px 15px var(--sombra-suave);
+        }
+        
+        .boton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(178, 223, 219, 0.7);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Páginas Libres</h1>
+        <p>Donde el tiempo y la amistad florecen. ¡Encontremos ese momento dorado para conectar!</p>
+
+        <!-- Sección 1: Tu Horario -->
+        <div class="seccion">
+            <h2>🌸 1. Pinta tu Agenda</h2>
+            <p>Haz clic en las horas que tienes ocupadas. Solo necesitamos saber cuándo <strong>no</strong> estás disponible.</p>
+            <div id="calendario"></div>
+        </div>
+
+        <!-- Sección 2: El Código Mágico de tu Horario -->
+        <div class="seccion">
+            <h2>✨ 2. Exporta tu Magia</h2>
+            <p>Una vez que llenes tu agenda, copia este código y envíalo a tus amigas por el chat.</p>
+            <textarea id="exportData" readonly placeholder="Aquí aparecerá tu código de horario..."></textarea>
+            <button class="boton" onclick="exportarMiHorario()">Generar y Copiar mi Código</button>
+        </div>
+
+        <!-- Sección 3: Importar la Magia de tus Amigas -->
+        <div class="seccion">
+            <h2>🦋 3. Combina los Horarios</h2>
+            <p>Pega aquí los códigos que te enviaron tus amigas. Puedes pegar varios, uno después del otro.</p>
+            <textarea id="importData" placeholder="Pega aquí los códigos de tus amigas..."></textarea>
+        </div>
+        
+        <!-- Sección 4: El Resultado -->
+        <div class="seccion">
+            <h2>🌟 4. ¡Descubre las Páginas Libres!</h2>
+            <p>Presiona este botón para ver en el calendario (con amarillo brillante 💛) los momentos en que todas están libres.</p>
+            <button class="boton" onclick="calcularTiempoLibreComun()">¡Encontrar Tiempo Juntas!</button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- CONFIGURACIÓN ---
+        const dias = ["", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+        const horas = Array.from({length: 15}, (_, i) => `${String(i + 8).padStart(2, '0')}:00`); // De 08:00 a 22:00
+        
+        // --- DATOS DE LA APP ---
+        let miHorario = {}; // { 'Lunes-09:00': true, 'Martes-18:00': true }
+        let horariosAmigas = []; // [ { 'Lunes-10:00': true }, { 'Lunes-12:00': true } ]
+
+        // --- FUNCIONES DEL CALENDARIO ---
+        function renderizarCalendario() {
+            const calendarioDiv = document.getElementById('calendario');
+            calendarioDiv.innerHTML = ''; // Limpiar antes de dibujar
+
+            // Crear cabeceras de los días
+            dias.forEach(dia => {
+                const header = document.createElement('div');
+                header.className = 'header-dia';
+                header.textContent = dia;
+                calendarioDiv.appendChild(header);
+            });
+
+            // Crear la cuadrícula de horas
+            horas.forEach(hora => {
+                // Celda de la hora
+                const celdaHora = document.createElement('div');
+                celdaHora.className = 'celda-hora';
+                celdaHora.textContent = hora;
+                calendarioDiv.appendChild(celdaHora);
+
+                // Celdas de tiempo para cada día
+                dias.slice(1).forEach(dia => {
+                    const celdaTiempo = document.createElement('div');
+                    celdaTiempo.className = 'celda-tiempo';
+                    const id = `${dia}-${hora}`;
+                    celdaTiempo.id = id;
+                    celdaTiempo.onclick = () => toggleOcupado(id);
+                    calendarioDiv.appendChild(celdaTiempo);
+                });
+            });
+        }
+        
+        function toggleOcupado(id) {
+            const celda = document.getElementById(id);
+            if (miHorario[id]) {
+                delete miHorario[id];
+                celda.classList.remove('ocupado-yo');
+            } else {
+                miHorario[id] = true;
+                celda.classList.add('ocupado-yo');
+            }
+            actualizarExportacion();
+        }
+        
+        // --- FUNCIONES DE IMPORTAR Y EXPORTAR ---
+        function actualizarExportacion() {
+            const exportTextarea = document.getElementById('exportData');
+            // Usamos JSON.stringify para convertir nuestro objeto a un texto fácil de compartir
+            exportTextarea.value = JSON.stringify(miHorario);
+        }
+
+        function exportarMiHorario() {
+            const exportTextarea = document.getElementById('exportData');
+            actualizarExportacion();
+            exportTextarea.select();
+            document.execCommand('copy');
+            alert('¡Código copiado! 🦋 Ahora pégalo en tu chat grupal.');
+        }
+
+        function calcularTiempoLibreComun() {
+            // 1. Resetear el calendario a su estado base
+            document.querySelectorAll('.celda-tiempo').forEach(c => {
+                c.classList.remove('disponible-todas', 'ocupado-amiga');
+            });
+
+            // 2. Leer y procesar los horarios de las amigas
+            const importTextarea = document.getElementById('importData');
+            const textoImportado = importTextarea.value.trim();
+            horariosAmigas = [];
+            
+            if (textoImportado) {
+                // Suponemos que los códigos están separados por saltos de línea
+                // y que cada código es un JSON válido
+                const codigos = textoImportado.split('}{').join('}\n{').split('\n');
+                codigos.forEach(codigo => {
+                    try {
+                        horariosAmigas.push(JSON.parse(codigo));
+                    } catch(e) {
+                        console.error("Error al procesar un código:", codigo, e);
+                    }
+                });
+            }
+            
+            if (horariosAmigas.length === 0) {
+                alert("No has importado horarios de amigas. Pega sus códigos en la sección 3.");
+                return;
+            }
+
+            alert(`¡Genial! Se cargaron ${horariosAmigas.length} horarios de amigas. Calculando la magia...`);
+            
+            // 3. Iterar por cada celda para ver la disponibilidad
+            horas.forEach(hora => {
+                dias.slice(1).forEach(dia => {
+                    const id = `${dia}-${hora}`;
+                    let estaOcupado = false;
+
+                    // ¿Estoy yo ocupada?
+                    if (miHorario[id]) {
+                        estaOcupado = true;
+                    }
+
+                    // ¿Alguna de mis amigas está ocupada?
+                    for(const horario of horariosAmigas) {
+                        if (horario[id]) {
+                            estaOcupado = true;
+                            // Opcional: Marcar los horarios de amigas para visualización
+                            document.getElementById(id).classList.add('ocupado-amiga');
+                            break;
+                        }
+                    }
+                    
+                    // 4. Si NADIE está ocupado, ¡es una Página Libre!
+                    if (!estaOcupado) {
+                        document.getElementById(id).classList.add('disponible-todas');
+                    }
+                });
+            });
+        }
+        
+        // --- INICIAR LA APP ---
+        document.addEventListener('DOMContentLoaded', renderizarCalendario);
+    </script>
+
+</body>
+</html>
